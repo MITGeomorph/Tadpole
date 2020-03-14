@@ -11,4 +11,9 @@ Perron, J.T., J.W. Kirchner and W.E. Dietrich (2009), Formation of evenly spaced
 
 Perron, J.T., P.W. Richardson, K.L. Ferrier, and M. Lapôtre (2012), The root of branching river networks. Nature, 492, 100–103, doi: 10.1038/nature11672.
 
+Richardson, P.W., Perron, J.T., Miller, S.R., & Kirchner, J.W. (in review), Modeling the formation of topographic asymmetry by aspect-dependent erosional processes and lateral channel migration. Journal of Geophysical Research: Earth Surface. 
+
+Richardson, P.W., Perron, J.T., Miller, S.R., & Kirchner, J.W. (in review), Unraveling the mysteries of asymmetric topography at Gabilan Mesa, California. Journal of Geophysical Research: Earth Surface.
+
+
 Thanks!
