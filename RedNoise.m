@@ -46,9 +46,7 @@ if periodic
     
     % Generate a random matrix of Fourier components. Note that if you need a
     % different starting surface each time you launch a Matlab session, you
-    % should initialize the random number generator with something like:
-    % s = sum(100*clock);
-    % rand('seed',s);
+    % should initialize the random number generator first with rng('shuffle')
     F = (rand(ny,nx)-0.5) + 1i* (rand(ny,nx)-0.5);
     
     % Identify the DC component
@@ -84,9 +82,7 @@ else % user did not request periodic output
 
     % Generate a random matrix of Fourier components. Note that if you need a 
     % different starting surface each time you launch a Matlab session, you 
-    % should initialize the random number generator with something like:
-    % s = sum(100*clock);
-    % rand('seed',s);
+    % should initialize the random number generator first with rng('shuffle')
     F = (rand(n)-0.5) + 1i* (rand(n)-0.5);  
 
     % Identify the DC component

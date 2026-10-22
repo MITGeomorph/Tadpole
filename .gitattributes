@@ -1,0 +1,7 @@
+# Store text files with LF line endings in the repository; git gives each
+# computer its own convention (CRLF on Windows, LF on macOS and Linux) on checkout
+* text=auto
+*.m text
+*.c text
+*.h text
+*.md text

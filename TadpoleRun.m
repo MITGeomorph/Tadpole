@@ -4,15 +4,15 @@ function [p,g] = TadpoleRun(p,g)
 %
 % Performs main iteration loop of Tadpole
 
-n=0;
+iter = 0;
 
 while p.t < p.tf
     
-    n = n + 1;  
+    iter = iter + 1;  
     
     %%%%%%%%%%%%%%%%%%%%%% UPDATE ELEVATIONS %%%%%%%%%%%%%%%%%%%%%%%
 
-    [p g] = Update(p,g);
+    [p, g] = Update(p,g);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -28,8 +28,8 @@ while p.t < p.tf
     
     % if it is time to redraw the plot, do so.
     if p.doDrawPlot
-        if ~rem(n,p.plotint)
-            DrawPlot(n,p,g)
+        if ~rem(iter,p.plotint)
+            DrawPlot(iter,p,g)
         end        
     end
 
@@ -39,9 +39,12 @@ while p.t < p.tf
     %%%%%%%%%%%%%%%%%%%%%%%%% SAVE DATA %%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     if p.doSaveOutput
-        if ~rem(n,p.saveint)
-            p.lastsave = n/p.saveint + 1;
-            g.output(:,:,p.lastsave) = g.U;
+        if ~rem(iter,p.saveint)
+            p.lastsave = iter/p.saveint + 1;
+            g.savedZ(:,:,p.lastsave) = g.Z;
+            if p.doSediment
+                g.savedH(:,:,p.lastsave) = g.H;
+            end
             g.t(p.lastsave) = p.t;
         end
     end
@@ -50,4 +53,4 @@ while p.t < p.tf
     
 end
 
-p.iterations = n;
+p.iterations = iter;

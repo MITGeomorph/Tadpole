@@ -1,4 +1,4 @@
-function [p g] = BoundaryMat(p,g)
+function [p, g] = BoundaryMat(p,g)
 
 % create a matrix C that is 1 where uplift and erosion should occur, 
 % 0 where it shouldn't

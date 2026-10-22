@@ -1,96 +1,50 @@
-function DrawPlot(n,p,g)
+function DrawPlot(iter,p,g)
 
 switch p.plottype
-
-    case 'drainage area' % map view with log(A) as color
-        
-        figure(p.fighandle)
-        imagesc(g.x,g.y,log10(eval(['mex' p.routing '(g.U,p.dy/p.dx,1*(~g.C),p.bvec,p.flood)'])))
-        title(['Iteration=' num2str(n) ', t=' num2str(round(p.t)) ', dt=' num2str(round(p.dt))])
-        drawnow                
-
-    case 'curvature' % map view with normalized curvature as color
-        
-        figure(p.fighandle)
-        imagesc(g.x,g.y,curvn(g.U))
-        title(['Iteration=' num2str(n) ', t=' num2str(round(p.t)) ', dt=' num2str(round(p.dt))])
-        drawnow                
 
     case 'elevation' % map view with elevation as color
         
         figure(p.fighandle)
-        imagesc(g.x,g.y,g.U)
-        title(['Iteration=' num2str(n) ', t=' num2str(round(p.t)) ', dt=' num2str(round(p.dt))])
+        imagesc(g.x,g.y,g.Z)
+        title(['Iteration=' num2str(iter) ', t=' num2str(round(p.t)) ', dt=' num2str(round(p.dt))])
         colorbar
-
-%         set(gca,'visible','off')
-%         colorbar off
         
         drawnow
+
+    case {'hillshade','sediment'} % Top-down shaded relief, colored by elevation ('hillshade') or by
+                                  % sediment thickness ('sediment')
+
+        figure(p.fighandle)
+
+        v = 5; % vertical exaggeration (scalar)
+        az = 315; % light azimuth in degrees CCW from +x
+
+        if strcmp(p.plottype,'sediment')
+            h = surf(g.x, g.y, v*g.Z, g.H);   % color by sediment thickness
+        else
+            h = surf(g.x, g.y, v*g.Z, g.Z);   % color by original elevation
+        end
+        set(h, 'EdgeColor', 'none');
         
-    case 'contour' % normalized contour map
-        
-        figure(p.fighandle)
-        ncont=10;
-        contour(g.X,g.Y,(g.U-min(g.U(:)))/range(g.U(:)),ncont)
-        title(['Iteration=' num2str(n) ', t=' num2str(round(p.t)) ', dt=' num2str(round(p.dt))])
-        drawnow        
+        title(['Iteration=' num2str(iter) ', t=' num2str(round(p.t)) ', dt=' num2str(round(p.dt))])
 
-    case 'shade' % shaded relief
-        
-        figure(p.fighandle)
-        Z.grid = flipud(g.U);
-        Z.x = g.x;
-        Z.y = g.x;
-        Z.dx = p.dx;
-        Z.dy = p.dy;
-        az = 315;
-        alt = 45;
-        Shade(Z,az,alt,p.zfactor);
-        title(['Iteration=' num2str(n) ', t=' num2str(round(p.t)) ', dt=' num2str(round(p.dt))])
-        drawnow
-
-    case 'color shade' % colored shaded relief
-        
-        figure(p.fighandle)
-        Z.grid = flipud(g.U);
-        Z.x = g.x;
-        Z.y = g.x;
-        Z.dx = p.dx;
-        Z.dy = p.dy;
-        az = 315;
-        alt = 45;
-%         ColorShade(Z,Z,az,alt,p.zfactor);
-        [~,h] = ColorShade(Z,Z,az,alt,p.zfactor);
-        A = zeros(size(p.F));
-        A(p.F==1) = 0;
-        A(p.F==0) = 1;
-        set(h,'alphadata',flipud(A))
-%         colorbar off
-%         set(gca,'visible','off')
-        title(['Iteration=' num2str(n) ', t=' num2str(round(p.t)) ', dt=' num2str(round(p.dt))])
-        drawnow
-
-    case 'mesh' % mesh plot
-
-        figure(p.fighandle)
-        surf(g.X,g.Y,flipud(g.U)); 
-        vertexag = [1 max(g.Y(:))/max(g.X(:)) p.zfactor*range(g.U(:))/max(g.X(:))]; 
-        set(gca, 'PlotBoxAspectRatio', vertexag);
-        title(['Iteration=' num2str(n) ', t=' num2str(round(p.t)) ', dt=' num2str(round(p.dt))])
-        drawnow
- 
-
-    otherwise % case 1 and default: perspective surface plot
-
-        figure(p.fighandle)
-        surf(g.X,g.Y,flipud(g.U)); 
+        colormap(parula)                % choose colormap as desired
         shading interp
-        camlight left 
-        lighting phong
-        vertexag = [1 max(g.Y(:))/max(g.X(:)) p.zfactor*range(g.U(:))/max(g.X(:))]; 
-        set(gca, 'PlotBoxAspectRatio', vertexag);
-        title(['Iteration=' num2str(n) ', t=' num2str(round(p.t)) ', dt=' num2str(round(p.dt))])
+        lighting gouraud
+        material([0.6 0.8 0.0])         % [ambient diffuse specular]
+        axis equal tight
+        view(2)                         % top-down
+        
+        % place a distant light at az (CCW from +x) and 45° elevation
+        camlight(az, 45)
+        cb = colorbar;
+        if strcmp(p.plottype,'sediment'), cb.Label.String = 'sediment thickness (m)'; end
+
         drawnow
+
+    case 'perspective' % oblique 3-D view with lighting, colored by elevation (PerspectiveView)
+
+        figure(p.fighandle)
+        PerspectiveView(p, g, p.persp, ['Iteration=' num2str(iter) ', t=' num2str(round(p.t)) ', dt=' num2str(round(p.dt))]);
 
 end

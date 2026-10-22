@@ -1,37 +1,59 @@
-function [p g] = Update(p,g)
+function [p, g] = Update(p,g)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % UPDATE elevations using operator splitting %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Order of the operators. With the implicit
+% fluvial solvers (the default, and required for sediment) the time step is
+% p.dtmax, known in advance, so the river step comes last: uplift, then
+% hillslope transport, then rivers. The state at the end of each step (what is
+% plotted and saved) is then the one right after the river step, so it does not
+% show soil that hillslopes delivered to channels during the step and that the
+% river has not yet had a chance to carry away, and no delivered soil is left
+% pending for the next step. The hillslope step uses the channel mask from the
+% previous river step (from TadpoleInitialize on the first step).
+% The explicit fluvial solver sets the time step from the Courant number of
+% the surface it erodes, so with it the river step comes first.
 
-% CHANNEL INCISION
-if p.doStreamPower
-    [p g] = FT(p,g); % Forward-time explicit
-    % Note that FT performs two additional steps:
-    % 1. adjusts time step according to the Courant number
+if p.doStreamPower && strcmp(p.fluvialSolver, 'explicit')
+
+    % CHANNEL INCISION, forward-time explicit. StreamPower also
+    % 1. adjusts the time step according to the stability factor
     % 2. records locations of channels
-end
+    [p, g] = StreamPower(p,g);
 
-
-% SOURCE TERMS / PERTURBATIONS 
-g = Source(p,g);
-
-
-% LANDSLIDING
-if p.doLandslides
-    g = Landslide(p,g);
-end
-
-
-% DIFFUSION
-if p.doDiffusion
-    if (p.doStreamPower && ~p.doChannelDiffusion) || (p.doStreamPower && p.doAdaptiveTimeStep)
-        g = SetUpADI(p,g); % update ADI matrices to exclude channel points
-        % in the future, we could do this more efficiently by constructing
-        % archetypal ADI matrices at the beginning, and then zeroing out
-        % rows or multiplying by dtnew/dtold as necessary, depending on 
-        % where the channels are and what the new time step is
+    % HILLSLOPE PROCESSES
+    if p.doNLDiffusion
+        g = NLDiff(p,g); % Nonlinear hillslope diffusion
     end
-    g = ADI(p,g); % alternating-direction implicit (Crank-Nicolson in 2D)
+
+    % SOURCE TERMS / PERTURBATIONS
+    g = Source(p,g);
+
+else
+
+    % SOURCE TERMS / PERTURBATIONS
+    g = Source(p,g);
+
+    % HILLSLOPE PROCESSES
+    if p.doNLDiffusion
+        g = NLDiff(p,g); % Nonlinear hillslope diffusion
+    end
+
+    % CHANNEL INCISION, and SEDIMENT ENTRAINMENT AND DEPOSITION if p.doSediment
+    % (the fluvial solvers replace g.Budget; keep this step's hillslope terms)
+    if p.doStreamPower
+        hillBudget = struct();
+        if isfield(g,'Budget')
+            for f = fieldnames(g.Budget)'
+                if startsWith(f{1}, 'hill'), hillBudget.(f{1}) = g.Budget.(f{1}); end
+            end
+        end
+        [p, g] = FluvialImplicit(p,g); % Backward-time implicit, with sediment if p.doSediment (C MEX solver mexSPACE)
+        for f = fieldnames(hillBudget)'
+            g.Budget.(f{1}) = hillBudget.(f{1});
+        end
+    end
+
 end

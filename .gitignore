@@ -1,0 +1,17 @@
+# compiled MEX files (built by compile_mex.m on each computer)
+*.mexw64
+*.mexmaci64
+*.mexmaca64
+*.mexa64
+
+# MATLAB autosave files
+*.asv
+*.m~
+
+# model output: saved runs, final-surface images and movie frames
+*.mat
+*.png
+
+# operating system files
+.DS_Store
+Thumbs.db

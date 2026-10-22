@@ -23,19 +23,24 @@ function solution = Tadpole(initial,p)
 
 % check arguments
 
-if nargin ~= 2, help adm; return; end
+if nargin ~= 2, help Tadpole; return; end
 
 
 % run model
 
-[p g] = TadpoleInitialize(initial,p);
+[p, g] = TadpoleInitialize(initial,p);
 
 
-[p g] = TadpoleRun(p,g);
+[p, g] = TadpoleRun(p,g);
 
 
-[p g] = TadpoleFinalize(p,g);
+[p, g] = TadpoleFinalize(p,g);
 
             
-% assign solution to output argument
-solution = g.output;
+% assign solution to output argument: all saved grids if the output is saved,
+% otherwise the final elevations
+if p.doSaveOutput
+    solution = g.savedZ;
+else
+    solution = g.Z;
+end

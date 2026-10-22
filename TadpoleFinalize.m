@@ -1,4 +1,4 @@
-function [p g] = TadpoleFinalize(p,g)
+function [p, g] = TadpoleFinalize(p,g)
 
 % TadpoleFinalize.m
 %
@@ -6,22 +6,38 @@ function [p g] = TadpoleFinalize(p,g)
 
 if p.doSaveOutput % if we're saving results
 
-    g.output(:,:,p.lastsave+1)=g.U;
+    % add the final state, unless the last save interval already saved it
+    if g.t(p.lastsave) < p.t
+        g.savedZ(:,:,p.lastsave+1)=g.Z;
+        if p.doSediment
+            g.savedH(:,:,p.lastsave+1) = g.H;
+        end
+        g.t(p.lastsave+1)=p.t;
+    end
 
-    g.t(p.lastsave+1)=p.t;
-    
-    output = g.output;
+    elevation = g.savedZ; % elevations at the saved times
+    vars = {'p', 't', 'elevation'};
+    if p.doSediment
+        sediment = g.savedH; % sediment thickness at the same times
+        vars = [vars {'sediment'}];
+    end
     
     t = g.t;
     
-    save(p.runname, '-v7.3', 'p', 't', 'output');
+    if isfield(p,'fighandle')
+        fighandle = p.fighandle;
+    
+        p = rmfield(p,'fighandle'); % temporarily remove the figure handle to avoid a large output file
+    
+        save(p.runname, '-v7.3', vars{:});
+    
+        p.fighandle = fighandle; 
+    else
+        save(p.runname, '-v7.3', vars{:});
+    end
 
     % take a snapshot of the final topography and save it as an image
     Snapshot(p,g);
-    
-else
-    
-    g.output = g.U;
 
 end
 
