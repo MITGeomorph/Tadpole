@@ -91,4 +91,4 @@ With `p.doSaveOutput = 1`, `<p.runname>.mat` contains:
 - `p`: the parameters;
 - `sediment` (with sediment): sediment thickness at the same times; bedrock elevation is `elevation - sediment`.
 
-`TadpoleMovie(elevation,p,t,frame_interval,basename[,sediment])` writes one .png image for every `frame_interval`-th saved grid, using `p.plottype`, into a new subfolder named `basename`.
+`TadpoleMovie(elevation,p,t,frame_interval,basename[,sediment][,'fps',fps])` writes one .png image for every `frame_interval`-th saved grid, using `p.plottype`, into a new subfolder named `basename`. With `'fps',fps` (frames per second, > 0), it also writes the images as a video, `<basename>.mp4` (MPEG-4, H.264); without it, or with `fps = 0`, it writes only the images. Where MATLAB cannot write MPEG-4 (Linux), the video is Motion JPEG AVI (`<basename>.avi`).

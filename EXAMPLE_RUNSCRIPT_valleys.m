@@ -153,10 +153,11 @@ init([1 end],:) = 0;
 % p.doSaveOutput = 1, all saved grids)
 solution = Tadpole(init,p);
 
-%% MAKE FRAMES FOR A MOVIE %%
+%% MAKE A MOVIE %%
 
 % (set p.doSaveOutput = 1 above first)
 % basename = [p.runname '_movie']; % base name of the image files, and of the new subfolder they go in
 % frame_interval = 2;          % draw every frame_interval-th saved grid
+% fps = 15;                    % frame rate of the video <basename>.mp4 (frames per second); 0 = write only the frames
 % load(p.runname)              % load the saved elevations (elevation), parameters (p) and times (t)
-% TadpoleMovie(elevation,p,t,frame_interval,basename) % write the frames as .png images
+% TadpoleMovie(elevation,p,t,frame_interval,basename,'fps',fps) % write the frames as .png images, and the video

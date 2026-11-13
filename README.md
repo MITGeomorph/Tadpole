@@ -24,7 +24,7 @@ A parameter reference is in [PARAMETERS.md](PARAMETERS.md).
 |---|---|---|
 | `EXAMPLE_RUNSCRIPT_island.m` | Erosion of a volcanic island with no uplift. Irregular boundaries: fixed points inside the domain (the sea). Precipitation that varies in space, a smoothed erosion threshold, and channels as sinks for hillslope soil. | 2 min |
 | `EXAMPLE_RUNSCRIPT_rivers.m` | River networks cutting into an uplifting plateau on a large grid (1000 x 1000), with fixed boundaries all around and river incision only. Long time steps (100,000 years) with the implicit solver. | 40 s |
-| `EXAMPLE_RUNSCRIPT_valleys.m` | Evenly spaced ridges and valleys on a grid of 10 m cells: nonlinear hillslope transport, including in channels, and river incision without thresholds. Periodic and fixed boundaries; saving output and making movie frames. | 2 min |
+| `EXAMPLE_RUNSCRIPT_valleys.m` | Evenly spaced ridges and valleys on a grid of 10 m cells: nonlinear hillslope transport, including in channels, and river incision without thresholds. Periodic and fixed boundaries; saving output and making a movie. | 2 min |
 | `EXAMPLE_RUNSCRIPT_sediment.m` | A mountain range shedding sediment onto a foreland, after Yuan et al. (2019): alluvial fans that merge into a plain crossed by shifting channels. Sediment entrainment and deposition, uplift that varies in space, multiple-flow routing, mirror and periodic boundaries. | 3.5 min |
 
 \*On a Windows laptop without plotting; plotting adds time.
@@ -94,7 +94,7 @@ The flooding code of the previous version had several problems, which this revis
 
 ### Other changes
 
-- Plot types 'elevation', 'hillshade', 'sediment' and 'perspective' (with `p.plotVE`); `TadpoleMovie` makes movie frames from saved runs.
+- Plot types 'elevation', 'hillshade', 'sediment' and 'perspective' (with `p.plotVE`); `TadpoleMovie` makes movie frames and, optionally, an .mp4 video from saved runs.
 - `compile_mex.m` builds the MEX files on Windows, macOS (Intel and Apple silicon) and Linux. Compiled MEX files are no longer distributed.
 - Removed: landslides, linear diffusion by ADI, the plot types 'mesh', 'contour', 'drainage area', 'curvature', 'shade' and 'color shade', and the old examples.
 
